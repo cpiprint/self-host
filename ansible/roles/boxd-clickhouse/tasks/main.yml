@@ -74,9 +74,13 @@
 
 - name: Apply schema migrations
   shell: |
+    set -e
     for f in /tmp/clickhouse-migrations/*.sql; do
-      clickhouse-client --host {{ vrack_ip }} --password '{{ clickhouse_password }}' --multiquery < "$f"
+      clickhouse-client --host {{ vrack_ip | quote }} < "$f"
     done
+  environment:
+    CLICKHOUSE_PASSWORD: "{{ clickhouse_password }}"
+  no_log: true
   changed_when: false
 
 - name: Clean up migrations
